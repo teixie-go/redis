@@ -87,7 +87,7 @@ func Client(aliases ...string) redis.Cmdable {
 	if client, ok := clients[alias]; ok {
 		return client
 	}
-	panic(fmt.Sprintf("redis client %s unregistered", alias))
+	panic(fmt.Sprintf("redis client [%s] unregistered", alias))
 }
 
 func Nil(err error) bool {
