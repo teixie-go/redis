@@ -10,7 +10,7 @@ import (
 )
 
 const (
-	DefaultAlias = "default"
+	defaultAlias = "default"
 )
 
 type Config interface {
@@ -66,30 +66,30 @@ func initRedis(cfg Config) (redis.Cmdable, error) {
 	return initRedisNormal(cfg)
 }
 
-func Nil(err error) bool {
-	return err == redis.Nil
-}
-
-func resolveAlias(alias ...string) string {
-	if len(alias) > 0 {
-		return alias[0]
+func resolveAlias(aliases ...string) string {
+	if len(aliases) > 0 {
+		return aliases[0]
 	}
-	return DefaultAlias
+	return defaultAlias
 }
 
-func RegisterClient(cfg Config, alias ...string) (redis.Cmdable, error) {
+func Register(cfg Config, aliases ...string) (redis.Cmdable, error) {
 	client, err := initRedis(cfg)
 	if err != nil {
 		return nil, err
 	}
-	clients[resolveAlias(alias...)] = client
+	clients[resolveAlias(aliases...)] = client
 	return client, nil
 }
 
-func Client(alias ...string) redis.Cmdable {
-	as := resolveAlias(alias...)
-	if client, ok := clients[as]; ok {
+func Client(aliases ...string) redis.Cmdable {
+	alias := resolveAlias(aliases...)
+	if client, ok := clients[alias]; ok {
 		return client
 	}
-	panic(fmt.Sprintf("redis client %s unregistered", as))
+	panic(fmt.Sprintf("redis client %s unregistered", alias))
+}
+
+func Nil(err error) bool {
+	return err == redis.Nil
 }
